@@ -1,24 +1,30 @@
 {
   "name": "hardverapro-price-checker",
   "version": "1.0.0",
-  "description": "Chrome extension for price checking on hardverapro.hu",
+  "description": "Price checker extension for Harderapro.hu",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "webpack --mode development --config webpack.config.js"
   },
   "author": "Zsombor Balatoni",
   "license": "UNLICENSED",
-  "devDependencies": {
-    "autoprefixer": "^10.4.20",
+  "dependencies": {
+    "@types/chrome": "^0.0.280",
     "chrome-types": "^0.1.315",
-    "postcss": "^8.4.47",
+    "clean-webpack-plugin": "^4.0.0",
+    "copy-webpack-plugin": "^12.0.2",
+    "css-loader": "^7.1.2",
+    "file-loader": "^6.2.0",
+    "html-webpack-plugin": "^5.6.3",
+    "postcss-loader": "^8.1.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "style-loader": "^4.0.0",
     "tailwindcss": "^3.4.14",
+    "ts-loader": "^9.5.1",
     "typescript": "^5.6.3",
+    "url-loader": "^4.1.1",
     "webpack": "^5.96.1",
     "webpack-cli": "^5.1.4"
-  },
-  "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
   }
 }

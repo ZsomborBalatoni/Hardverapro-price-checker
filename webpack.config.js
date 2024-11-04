@@ -2,12 +2,16 @@ const path = require('path');
 const HtmlPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const loader = require('css-loader');
 
 module.exports = {
   mode: 'development',
+  devtool: 'cheap-module-source-map',
   entry: {
-    popup: path.resolve('./src/popup.tsx'),
-    options: path.resolve('src/options/options.tsx'),
+    popup: path.resolve('./src/popup/popup.tsx'),
+    options: path.resolve('./src/options/options.tsx'),
+    background: path.resolve('./src/background/background.tsx'),
+    contentScript: path.resolve('./src/contentScript/contentScript.tsx'),
   },
   module: {
     rules: [
@@ -47,7 +51,7 @@ module.exports = {
     path: path.resolve('dist'),
     filename: '[name].js',
   },
-  optimalization: {
+  optimization: {
     splitChunks: {
       chunks(chunk) {
         return chunk.name !== 'contentScript';
@@ -55,3 +59,14 @@ module.exports = {
     },
   },
 };
+
+function getHtmlPlugins(chunks) {
+  return chunks.map(
+    (chunk) =>
+      new HtmlPlugin({
+        title: 'Hardverapro Price Checker',
+        filename: `${chunk}.html`,
+        chunks: [chunk],
+      })
+  );
+}
