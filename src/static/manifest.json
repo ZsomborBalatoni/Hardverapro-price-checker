@@ -13,10 +13,12 @@
     "default_title": "Hardverapro Price Checker",
     "default_icon": "icon.png"
   },
-  "permissions": ["alarms", "contextMenus", "storage"],
+  "permissions": ["alarms", "storage", "scripting"],
+  "host_permissions": ["https://hardverapro.hu/*"],
   "options_page": "options.html",
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "content_scripts": [
     {
