@@ -13,7 +13,6 @@ getProducts()
     console.error('Error fetching initial products:', error);
   });
 
-// Fetch products at intervals
 setInterval(async () => {
   try {
     console.log('Product fetch started');

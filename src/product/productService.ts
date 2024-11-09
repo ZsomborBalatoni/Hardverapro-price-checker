@@ -15,7 +15,12 @@ export async function getProducts(): Promise<Product[]> {
     const response = await axios.get(TARGET_URL);
     const $ = cheerio.load(response.data);
 
-    $('li[data-uadid].media ').each((index, element) => {
+    $('li[data-uadid]').each((index, element) => {
+      const classAttr = $(element).attr('class') || '';
+      if (!/^media $/.test(classAttr)) {
+        return;
+      }
+
       const dataUadId = $(element).attr('data-uadid');
       if (!dataUadId) {
         return;
