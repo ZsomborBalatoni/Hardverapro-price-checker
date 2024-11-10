@@ -8,13 +8,14 @@ import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import HomeIcon from '@mui/icons-material/Home';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Input, Button, Stack } from '@mui/joy';
 import { addProduct } from '../../storage/storageService';
@@ -24,6 +25,8 @@ const drawerWidth = 240;
 
 const DashboardLayout = () => {
   const [open, setOpen] = useState(false);
+  const [selectedMenu, setSelectedMenu] = useState<string>('home');
+  const [name, setName] = useState('');
   const [url, setUrl] = useState('');
   const [minTargetPrice, setMinTargetPrice] = useState('');
   const [maxTargetPrice, setMaxTargetPrice] = useState('');
@@ -31,21 +34,26 @@ const DashboardLayout = () => {
   const handleDrawerOpen = () => setOpen(true);
   const handleDrawerClose = () => setOpen(false);
 
+  const handleMenuClick = (menu: string) => {
+    setSelectedMenu(menu);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const minPrice = parseFloat(minTargetPrice);
     const maxPrice = parseFloat(maxTargetPrice);
 
-    if (isNaN(minPrice) || isNaN(maxPrice) || !url) {
+    if (isNaN(minPrice) || isNaN(maxPrice) || !name || !url) {
       alert('Please provide valid input.');
       return;
     }
 
     try {
-      await addProduct(url, minPrice, maxPrice);
+      await addProduct(name, url, minPrice, maxPrice);
       alert('Product added successfully!');
 
+      setName('');
       setUrl('');
       setMinTargetPrice('');
       setMaxTargetPrice('');
@@ -93,58 +101,87 @@ const DashboardLayout = () => {
         </div>
         <Divider />
         <List>
-          {['Home', 'Settings'].map((text, index) => {
-            const icons = [<HomeIcon />, <SettingsIcon />];
-            return (
-              <ListItem key={text} component="li">
-                <ListItemButton>
-                  <ListItemIcon>{icons[index]}</ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
-            );
-          })}
+          <ListItemButton onClick={() => handleMenuClick('home')}>
+            <ListItemIcon>
+              <HomeIcon />
+            </ListItemIcon>
+            <ListItemText primary="Home" />
+          </ListItemButton>
+          <ListItemButton onClick={() => handleMenuClick('addProduct')}>
+            <ListItemIcon>
+              <AddCircleIcon />
+            </ListItemIcon>
+            <ListItemText primary="Add New Product" />
+          </ListItemButton>
+          <ListItemButton onClick={() => handleMenuClick('settings')}>
+            <ListItemIcon>
+              <SettingsIcon />
+            </ListItemIcon>
+            <ListItemText primary="Settings" />
+          </ListItemButton>
         </List>
       </Drawer>
 
       <main className={`main ${open ? 'open' : ''}`}>
         <div className="drawer-header" />
-        <Typography component="h2" variant="h6" gutterBottom>
-          Add New Product
-        </Typography>
-        <form onSubmit={handleSubmit}>
-          <Stack spacing={2} className="form-container">
-            <Input
-              placeholder="Product URL"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              required
-              fullWidth
-              className="input-field"
-            />
-            <Input
-              placeholder="Minimum Target Price"
-              type="number"
-              value={minTargetPrice}
-              onChange={(e) => setMinTargetPrice(e.target.value)}
-              required
-              fullWidth
-              className="input-field"
-            />
-            <Input
-              placeholder="Maximum Target Price"
-              type="number"
-              value={maxTargetPrice}
-              onChange={(e) => setMaxTargetPrice(e.target.value)}
-              required
-              fullWidth
-              className="input-field"
-            />
-            <Button type="submit" className="submit-btn">
-              Add Product
-            </Button>
-          </Stack>
-        </form>
+        {selectedMenu === 'home' && (
+          <Typography component="h2" variant="h6">
+            Home Content
+          </Typography>
+        )}
+        {selectedMenu === 'addProduct' && (
+          <>
+            <Typography component="h2" variant="h6" gutterBottom>
+              Add New Product
+            </Typography>
+            <form onSubmit={handleSubmit}>
+              <Stack spacing={2} className="form-container">
+                <Input
+                  placeholder="Product name"
+                  value={name}
+                  onChange={(e) => setUrl(e.target.value)}
+                  required
+                  fullWidth
+                  className="input-field"
+                />
+                <Input
+                  placeholder="Product URL"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  required
+                  fullWidth
+                  className="input-field"
+                />
+                <Input
+                  placeholder="Minimum Target Price"
+                  type="number"
+                  value={minTargetPrice}
+                  onChange={(e) => setMinTargetPrice(e.target.value)}
+                  required
+                  fullWidth
+                  className="input-field"
+                />
+                <Input
+                  placeholder="Maximum Target Price"
+                  type="number"
+                  value={maxTargetPrice}
+                  onChange={(e) => setMaxTargetPrice(e.target.value)}
+                  required
+                  fullWidth
+                  className="input-field"
+                />
+                <Button type="submit" className="submit-btn">
+                  Add Product
+                </Button>
+              </Stack>
+            </form>
+          </>
+        )}
+        {selectedMenu === 'settings' && (
+          <Typography component="h2" variant="h6">
+            Settings Content
+          </Typography>
+        )}
       </main>
     </Box>
   );

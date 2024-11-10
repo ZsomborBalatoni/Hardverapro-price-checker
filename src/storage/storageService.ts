@@ -6,12 +6,14 @@ const supabase = createClient(
 );
 
 export const addProduct = async (
+  name: string,
   url: string,
   minTargetPrice: number,
   maxTargetPrice: number
 ) => {
   const { data, error } = await supabase.from('products').insert([
     {
+      name,
       url,
       min_target_price: minTargetPrice,
       max_target_price: maxTargetPrice,
@@ -35,6 +37,7 @@ export const fetchProducts = async () => {
 
 export const updateProduct = async (
   id: number,
+  name: string,
   url: string,
   minTargetPrice: number,
   maxTargetPrice: number
@@ -42,6 +45,7 @@ export const updateProduct = async (
   const { data, error } = await supabase
     .from('products')
     .update({
+      name,
       url,
       min_target_price: minTargetPrice,
       max_target_price: maxTargetPrice,
