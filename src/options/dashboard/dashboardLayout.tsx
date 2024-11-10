@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import Drawer from '@mui/material/Drawer';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
+import Typography from '@mui/joy/Typography';
 import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
@@ -17,8 +16,8 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import HomeIcon from '@mui/icons-material/Home';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { Input, Button, Stack } from '@mui/joy';
-import { addProduct } from '../../storage/storageService';
+import { Input, Button, Stack, Grid, Card, CardContent } from '@mui/joy';
+import { addProduct, fetchProducts } from '../../storage/storageService';
 import './dashboardlayout.css';
 
 const drawerWidth = 240;
@@ -30,6 +29,7 @@ const DashboardLayout = () => {
   const [url, setUrl] = useState('');
   const [minTargetPrice, setMinTargetPrice] = useState('');
   const [maxTargetPrice, setMaxTargetPrice] = useState('');
+  const [products, setProducts] = useState<any[]>([]);
 
   const handleDrawerOpen = () => setOpen(true);
   const handleDrawerClose = () => setOpen(false);
@@ -57,11 +57,27 @@ const DashboardLayout = () => {
       setUrl('');
       setMinTargetPrice('');
       setMaxTargetPrice('');
+      fetchProductList();
     } catch (error) {
       console.error('Error adding product:', error.message);
       alert('Error adding product.');
     }
   };
+
+  const fetchProductList = async () => {
+    try {
+      const data = await fetchProducts();
+      setProducts(data);
+    } catch (error) {
+      console.error('Error fetching products:', error.message);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedMenu === 'home') {
+      fetchProductList();
+    }
+  }, [selectedMenu]);
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -77,7 +93,13 @@ const DashboardLayout = () => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          <Typography
+            level="h4"
+            noWrap
+            component="div"
+            textColor="#000"
+            variant="plain"
+          >
             Dashboard
           </Typography>
         </Toolbar>
@@ -122,16 +144,68 @@ const DashboardLayout = () => {
         </List>
       </Drawer>
 
-      <main className={`main ${open ? 'open' : ''}`}>
+      <main
+        className={`main ${open ? 'open' : ''}`}
+        style={{ marginLeft: open ? drawerWidth : 0 }}
+      >
         <div className="drawer-header" />
         {selectedMenu === 'home' && (
-          <Typography component="h2" variant="h6">
-            Home Content
-          </Typography>
+          <>
+            <Typography level="h2" textColor="#000" noWrap>
+              Products List
+            </Typography>
+            <Grid
+              container
+              sx={{
+                display: 'flex',
+              }}
+            >
+              {products.length === 0 ? (
+                <Typography component="p" level="body-lg">
+                  No products available.
+                </Typography>
+              ) : (
+                products.map((product) => (
+                  <Grid
+                    key={product.id}
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <div className="item-card">
+                      <Card
+                        sx={{
+                          display: 'flex',
+                        }}
+                      >
+                        <CardContent>
+                          <Typography level="h4">{product.name}</Typography>
+                          <Typography level="body-md" textColor="#000">
+                            Min Target Price: {product.min_target_price} HUF
+                          </Typography>
+                          <Typography level="body-md" textColor="#000">
+                            Max Target Price: {product.max_target_price} HUF
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </Grid>
+                ))
+              )}
+            </Grid>
+          </>
         )}
         {selectedMenu === 'addProduct' && (
           <>
-            <Typography component="h2" variant="h6" gutterBottom>
+            <Typography
+              component="h2"
+              level="h2"
+              gutterBottom
+              textColor="#000"
+              noWrap
+            >
               Add New Product
             </Typography>
             <form onSubmit={handleSubmit}>
@@ -178,7 +252,7 @@ const DashboardLayout = () => {
           </>
         )}
         {selectedMenu === 'settings' && (
-          <Typography component="h2" variant="h6">
+          <Typography component="h2" level="h4">
             Settings Content
           </Typography>
         )}
