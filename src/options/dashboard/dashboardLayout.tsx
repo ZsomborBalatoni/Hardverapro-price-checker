@@ -17,7 +17,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Input, Button, Stack, Grid, Card, CardContent } from '@mui/joy';
-import { addProduct, fetchProducts } from '../../storage/storageService';
+import { addProduct, fetchProducts } from '../../database/databaseService';
 import './dashboardlayout.css';
 
 const drawerWidth = 240;
