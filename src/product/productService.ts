@@ -1,43 +1,59 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import { Product } from './IProduct';
+import { DBProduct } from '../database/databaseService';
 
-const TARGET_URL =
-  'https://hardverapro.hu/aprok/hardver/processzor/amd/keres.php?stext=7800x3d&stcid_text=&stcid=&stmid_text=&stmid=&minprice=&maxprice=&cmpid_text=&cmpid=&usrid_text=&usrid=&__buying=0&__buying=1&stext_none=';
-const TARGET_PRICE = 136000;
+export interface ScrapedProduct {
+  name: string;
+  dataUadId: string;
+  price: number;
+}
 
-export async function getProducts(): Promise<Product[]> {
-  console.log('Product fetching started');
+export async function getProductsFromSite(
+  dbProducts: DBProduct[]
+): Promise<ScrapedProduct[]> {
+  const scrapedProducts: ScrapedProduct[] = [];
 
-  const products: Product[] = [];
+  for (const dbProduct of dbProducts) {
+    try {
+      const response = await axios.get(dbProduct.url);
+      const $ = cheerio.load(response.data);
 
-  try {
-    const response = await axios.get(TARGET_URL);
-    const $ = cheerio.load(response.data);
+      $('li[data-uadid]').each((index, element) => {
+        const classAttr = $(element).attr('class') || '';
+        if (!/^media $/.test(classAttr)) {
+          return;
+        }
 
-    $('li[data-uadid]').each((index, element) => {
-      const classAttr = $(element).attr('class') || '';
-      if (!/^media $/.test(classAttr)) {
-        return;
-      }
+        const dataUadId = $(element).attr('data-uadid');
+        if (!dataUadId) {
+          return;
+        }
 
-      const dataUadId = $(element).attr('data-uadid');
-      if (!dataUadId) {
-        return;
-      }
+        const priceText = $(element)
+          .find('.uad-price')
+          .text()
+          .replace(/\D/g, '');
+        const price = parseInt(priceText, 10);
 
-      const priceText = $(element).find('.uad-price').text().replace(/\D/g, '');
-      const price = parseInt(priceText, 10);
-
-      if (dataUadId && !isNaN(price)) {
-        products.push({ dataUadId, price });
-      }
-    });
-
-    console.log('Product fetching ended, fetched products: ', products.length);
-    return products;
-  } catch (error) {
-    console.error('Error while fetching data: ', error);
-    return [];
+        if (dataUadId && !isNaN(price)) {
+          if (
+            price <= dbProduct.max_target_price &&
+            price >= dbProduct.min_target_price
+          ) {
+            scrapedProducts.push({
+              name: dbProduct.name,
+              dataUadId,
+              price,
+            });
+          }
+        }
+      });
+    } catch (error) {
+      console.error(
+        `Error while fetching data from ${dbProduct.name}'s url: ${dbProduct.url}:`,
+        error
+      );
+    }
   }
+  return scrapedProducts;
 }

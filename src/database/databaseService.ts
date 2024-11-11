@@ -1,4 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
+export interface DBProduct {
+  name: string;
+  url: string;
+  min_target_price: number;
+  max_target_price: number;
+  created: string;
+}
 
 const supabase = createClient(
   'https://edryohdtfgjbseubhxcx.supabase.co',
@@ -26,13 +33,13 @@ export const addProduct = async (
   return data;
 };
 
-export const fetchProducts = async () => {
+export const fetchProducts = async (): Promise<DBProduct[]> => {
   const { data, error } = await supabase.from('products').select('*');
 
   if (error) {
     throw new Error(error.message);
   }
-  return data;
+  return data as DBProduct[];
 };
 
 export const updateProduct = async (
