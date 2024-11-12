@@ -9,7 +9,8 @@ export interface ScrapedProduct {
 }
 
 export async function getProductsFromSite(
-  dbProducts: DBProduct[]
+  dbProducts: DBProduct[],
+  highestDataUadIds: Record<string, number>
 ): Promise<ScrapedProduct[]> {
   const scrapedProducts: ScrapedProduct[] = [];
 
@@ -36,7 +37,12 @@ export async function getProductsFromSite(
         const price = parseInt(priceText, 10);
 
         if (dataUadId && !isNaN(price)) {
+          const dataUadIdNumber = parseInt(dataUadId, 10);
+          const currentHighestDataUadId =
+            highestDataUadIds[dbProduct.name] || 0;
+
           if (
+            dataUadIdNumber > currentHighestDataUadId &&
             price <= dbProduct.max_target_price &&
             price >= dbProduct.min_target_price
           ) {
