@@ -6,6 +6,7 @@ import {
   storeHighestDataUadIds,
   getHighestDataUadIds,
 } from '../storage/storageService';
+import { sendEmailNotification } from '../notification/notificationService';
 
 let dbProducts: DBProduct[] = [];
 
@@ -38,6 +39,15 @@ async function initializeProducts() {
       'Highest dataUadIds stored in chrome.storage:',
       highestDataUadIds
     );
+
+    if (scrapedProducts != null) {
+      chrome.runtime.sendMessage({
+        action: 'showNotification',
+        products: scrapedProducts,
+      });
+
+      await sendEmailNotification(scrapedProducts);
+    }
   } catch (error) {
     console.error('Error while initializing products:', error);
   }
@@ -69,6 +79,15 @@ setInterval(async () => {
       'Highest dataUadIds stored in chrome.storage:',
       highestDataUadIds
     );
+
+    if (scrapedProducts != null) {
+      chrome.runtime.sendMessage({
+        action: 'showNotification',
+        products: scrapedProducts,
+      });
+
+      await sendEmailNotification(scrapedProducts);
+    }
   } catch (error) {
     console.error('Error while scraping products:', error);
   }

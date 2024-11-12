@@ -42,7 +42,7 @@ export async function getProductsFromSite(
             highestDataUadIds[dbProduct.name] || 0;
 
           if (
-            dataUadIdNumber > currentHighestDataUadId &&
+            //dataUadIdNumber > currentHighestDataUadId &&
             price <= dbProduct.max_target_price &&
             price >= dbProduct.min_target_price
           ) {
