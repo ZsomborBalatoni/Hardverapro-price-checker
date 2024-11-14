@@ -213,7 +213,7 @@ const DashboardLayout = () => {
                 <Input
                   placeholder="Product name"
                   value={name}
-                  onChange={(e) => setUrl(e.target.value)}
+                  onChange={(e) => setName(e.target.value)}
                   required
                   fullWidth
                   className="input-field"

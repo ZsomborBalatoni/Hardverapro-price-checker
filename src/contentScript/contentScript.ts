@@ -50,8 +50,6 @@ async function initializeProducts() {
         action: 'showNotification',
         products: scrapedProducts,
       });
-
-      //await sendEmailNotification(scrapedProducts);
     }
   } catch (error) {
     console.error('Error while initializing products:', error);
@@ -91,7 +89,7 @@ setInterval(async () => {
         products: scrapedProducts,
       });
 
-      //await sendEmailNotification(scrapedProducts);
+      await sendEmailNotification(scrapedProducts);
     }
   } catch (error) {
     console.error('Error while scraping products:', error);
