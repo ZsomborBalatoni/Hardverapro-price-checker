@@ -18,3 +18,22 @@ export function getHighestDataUadIds(): Promise<Record<string, number>> {
     });
   });
 }
+
+export async function clearStorage(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.clear(() => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+        return;
+      }
+
+      chrome.storage.sync.clear(() => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve();
+        }
+      });
+    });
+  });
+}

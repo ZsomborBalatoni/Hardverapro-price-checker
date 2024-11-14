@@ -18,6 +18,7 @@ export async function getProductsFromSite(
     try {
       const response = await axios.get(dbProduct.url);
       const $ = cheerio.load(response.data);
+      let currentHighestDataUadId = highestDataUadIds[dbProduct.name] || 0;
 
       $('li[data-uadid]').each((index, element) => {
         const classAttr = $(element).attr('class') || '';
@@ -30,28 +31,23 @@ export async function getProductsFromSite(
           return;
         }
 
+        const dataUadIdNumber = parseInt(dataUadId, 10);
         const priceText = $(element)
           .find('.uad-price')
           .text()
           .replace(/\D/g, '');
         const price = parseInt(priceText, 10);
 
-        if (dataUadId && !isNaN(price)) {
-          const dataUadIdNumber = parseInt(dataUadId, 10);
-          const currentHighestDataUadId =
-            highestDataUadIds[dbProduct.name] || 0;
-
-          if (
-            //dataUadIdNumber > currentHighestDataUadId &&
-            price <= dbProduct.max_target_price &&
-            price >= dbProduct.min_target_price
-          ) {
-            scrapedProducts.push({
-              name: dbProduct.name,
-              dataUadId,
-              price,
-            });
-          }
+        if (
+          dataUadIdNumber > currentHighestDataUadId &&
+          price <= dbProduct.max_target_price &&
+          price >= dbProduct.min_target_price
+        ) {
+          scrapedProducts.push({
+            name: dbProduct.name,
+            dataUadId,
+            price,
+          });
         }
       });
     } catch (error) {

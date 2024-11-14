@@ -5,6 +5,7 @@ import { fetchProducts } from '../database/databaseService';
 import {
   storeHighestDataUadIds,
   getHighestDataUadIds,
+  clearStorage,
 } from '../storage/storageService';
 import { sendEmailNotification } from '../notification/notificationService';
 
@@ -15,6 +16,10 @@ async function initializeProducts() {
     console.log('Products fetching from db started');
     dbProducts = await fetchProducts();
     console.log('Products loaded:', dbProducts);
+
+    clearStorage()
+      .then(() => console.log('Storage has been cleared.'))
+      .catch((error) => console.error('Failed to clear storage:', error));
 
     console.log('Get the highest dataUadIds from chrome.storage');
     const highestDataUadIds = await getHighestDataUadIds();
@@ -40,13 +45,13 @@ async function initializeProducts() {
       highestDataUadIds
     );
 
-    if (scrapedProducts != null) {
+    if (scrapedProducts.length != 0) {
       chrome.runtime.sendMessage({
         action: 'showNotification',
         products: scrapedProducts,
       });
 
-      await sendEmailNotification(scrapedProducts);
+      //await sendEmailNotification(scrapedProducts);
     }
   } catch (error) {
     console.error('Error while initializing products:', error);
@@ -80,13 +85,13 @@ setInterval(async () => {
       highestDataUadIds
     );
 
-    if (scrapedProducts != null) {
+    if (scrapedProducts.length != 0) {
       chrome.runtime.sendMessage({
         action: 'showNotification',
         products: scrapedProducts,
       });
 
-      await sendEmailNotification(scrapedProducts);
+      //await sendEmailNotification(scrapedProducts);
     }
   } catch (error) {
     console.error('Error while scraping products:', error);
