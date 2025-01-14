@@ -22,7 +22,7 @@ export async function getProductsFromSite(
 
       $('li[data-uadid]').each((index, element) => {
         const classAttr = $(element).attr('class') || '';
-        if (!/^media $/.test(classAttr)) {
+        if (!/^(media|media featured)$/.test(classAttr)) {
           return;
         }
 
@@ -33,7 +33,7 @@ export async function getProductsFromSite(
 
         const dataUadIdNumber = parseInt(dataUadId, 10);
         const priceText = $(element)
-          .find('.uad-price')
+          .find('.uad-col.uad-col-price .uad-price .text-nowrap')
           .text()
           .replace(/\D/g, '');
         const price = parseInt(priceText, 10);
